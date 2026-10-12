@@ -3,11 +3,24 @@
   "short_name": "Helmar",
   "description": "Helmar, din personliga vikingaguide för spel, äventyr och fornnordiska myter.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#080c12",
   "theme_color": "#080c12",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "assets/icon.svg",
       "sizes": "any",
