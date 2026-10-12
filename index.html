@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080c12">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
+  <link rel="manifest" href="manifest.json">
+  <title>Helmar — din spelguide</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080c12;
+      --panel: #111923;
+      --panel-soft: #172430;
+      --line: rgba(131, 173, 185, .2);
+      --text: #edf4f1;
+      --muted: #9aaeb5;
+      --gold: #d6b579;
+      --green: #83d9ca;
+      --cyan: #70d9e5;
+      --serif: Georgia, "Times New Roman", serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(112, 217, 229, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(112, 217, 229, .025) 1px, transparent 1px),
+        radial-gradient(ellipse at 75% 0%, rgba(39, 120, 153, .2), transparent 35rem),
+        radial-gradient(ellipse at 4% 88%, rgba(143, 105, 48, .14), transparent 31rem),
+        var(--bg);
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+    }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .app { width: min(1440px, 100%); min-height: 100vh; margin: auto; padding: 22px 34px 30px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding-bottom: 10px; border-bottom: 1px solid rgba(131,173,185,.14); }
+    .brand { display: flex; align-items: center; gap: 11px; letter-spacing: .18em; font-size: 13px; font-weight: 750; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(112,217,229,.5); border-radius: 11px; color: var(--cyan); background: linear-gradient(145deg, rgba(112,217,229,.12), rgba(214,181,121,.09)); box-shadow: inset 0 0 14px rgba(112,217,229,.08), 0 0 17px rgba(112,217,229,.08); }
+    .brand-mark svg { width: 17px; height: 21px; fill: none; stroke: currentColor; stroke-linecap: square; stroke-linejoin: bevel; stroke-width: 1.7; }
+    .top-note { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 11px rgba(112,217,229,.65); }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 308px; gap: 25px; margin-top: 22px; }
+    .main-panel { display: flex; flex-direction: column; min-height: min(790px, calc(100vh - 112px)); overflow: hidden; border: 1px solid var(--line); border-radius: 23px; background: linear-gradient(150deg, rgba(19,31,42,.97), rgba(10,16,24,.98)); box-shadow: 0 24px 70px rgba(0,0,0,.42), 0 0 38px rgba(41,132,159,.08), inset 0 1px rgba(255,255,255,.035); }
+    .hero { position: relative; display: flex; align-items: center; gap: 25px; padding: 26px 30px 23px; border-bottom: 1px solid var(--line); background: linear-gradient(110deg, rgba(112,217,229,.035), transparent 53%, rgba(214,181,121,.035)); }
+    .hero::after { position: absolute; right: 22px; bottom: 13px; color: rgba(112,217,229,.2); content: "⌬  /  09"; font-family: var(--serif); font-size: 11px; letter-spacing: .35em; pointer-events: none; }
+    .avatar-container { flex: 0 0 220px; width: 220px; }
+    .portrait { position: relative; width: 100%; height: 260px; overflow: hidden; border: 1px solid rgba(112,217,229,.42); border-radius: 16px; background: radial-gradient(circle at 50% 36%, #334b50, #0b1119 78%); box-shadow: inset 0 0 25px rgba(112,217,229,.12), 0 0 24px rgba(32,132,153,.14); transition: box-shadow .2s; }
+    .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; mix-blend-mode: multiply; filter: saturate(.84) contrast(1.06) brightness(2.4); }
+    .avatar-status { position: absolute; right: 8px; bottom: 8px; left: 8px; padding: 6px 8px; border: 1px solid rgba(112,217,229,.2); border-radius: 8px; background: rgba(8,13,19,.84); color: #b8e9e8; font-size: 10px; text-align: center; pointer-events: none; }
+    .model-credit { margin: 7px 2px 0; color: #858b80; font-size: 9px; line-height: 1.45; text-align: center; }
+    .model-credit a { color: #93dbe2; text-decoration: underline; text-underline-offset: 2px; }
+    .eyebrow { margin: 0 0 7px; color: var(--cyan); font-size: 10px; font-weight: 750; letter-spacing: .2em; text-transform: uppercase; }
+    .eyebrow::before { margin-right: 7px; color: var(--gold); content: "⌬ //"; }
+    h1 { margin: 0; font-family: var(--serif); font-size: clamp(27px, 3vw, 39px); font-weight: 500; letter-spacing: -.025em; }
+    .hero-copy { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .voice-toggle { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 8px 11px; border: 1px solid rgba(217,182,111,.25); border-radius: 10px; background: rgba(217,182,111,.08); color: #ead9b4; cursor: pointer; font-size: 11px; }
+    .voice-toggle[aria-pressed="false"] { border-color: var(--line); background: transparent; color: var(--muted); }
+    .chat { display: flex; flex: 1; flex-direction: column; gap: 18px; padding: 23px 30px 14px; overflow-y: auto; scroll-behavior: smooth; }
+    .message { display: flex; align-items: flex-start; gap: 11px; max-width: 83%; animation: arrive .24s ease-out; }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    .mini-avatar { display: grid; flex: 0 0 30px; place-items: center; width: 30px; height: 30px; border: 1px solid rgba(112,217,229,.25); border-radius: 50%; color: var(--cyan); background: linear-gradient(145deg, #1b3038, #15212c); font-family: var(--serif); font-size: 15px; }
+    .bubble { padding: 13px 16px; border: 1px solid rgba(131,173,185,.15); border-radius: 4px 16px 16px 16px; background: linear-gradient(140deg, rgba(34,51,62,.76), rgba(20,30,39,.78)); color: #e5eeeb; font-size: 13px; line-height: 1.7; white-space: pre-line; }
+    .user .bubble { border-color: rgba(214,181,121,.24); border-radius: 16px 4px 16px 16px; background: linear-gradient(140deg, rgba(120,94,53,.25), rgba(61,58,47,.32)); color: #f4eddd; }
+    .bubble strong { color: #e5c987; font-weight: 650; }
+    .bubble .source { display: block; margin-top: 9px; color: #969d8d; font-size: 10px; letter-spacing: .03em; }
+    .bubble .source a { margin-right: 9px; color: #85dce6; text-decoration: underline; text-underline-offset: 2px; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 30px 16px 71px; }
+    .suggestion { padding: 8px 12px; border: 1px solid rgba(112,217,229,.19); border-radius: 999px; background: rgba(15,26,34,.48); color: #c4d3d3; cursor: pointer; font-size: 11px; transition: .18s ease; }
+    .suggestion:hover { border-color: var(--cyan); background: rgba(112,217,229,.09); color: #e7feff; box-shadow: 0 0 17px rgba(112,217,229,.1); }
+    .composer-wrap { padding: 0 30px 23px; }
+    .composer { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 17px; border: 1px solid rgba(131,173,185,.2); border-radius: 15px; background: rgba(7,12,18,.78); transition: border-color .2s, box-shadow .2s; }
+    .composer:focus-within { border-color: rgba(112,217,229,.58); box-shadow: 0 0 20px rgba(52,164,184,.12); }
+    .composer input { flex: 1; min-width: 0; padding: 8px 0; border: 0; outline: 0; color: var(--text); background: transparent; font-size: 13px; }
+    .composer input::placeholder { color: #858b80; }
+    .mic-button { display: grid; flex: 0 0 39px; place-items: center; width: 39px; height: 39px; border: 1px solid rgba(112,217,229,.25); border-radius: 11px; background: rgba(112,217,229,.08); color: #a6e9eb; cursor: pointer; }
+    .mic-button[aria-pressed="true"] { border-color: #b66e59; background: rgba(182,110,89,.2); color: #ffd4c5; }
+    .send { display: grid; flex: 0 0 39px; place-items: center; width: 39px; height: 39px; border: 1px solid rgba(150,244,245,.62); border-radius: 11px; background: linear-gradient(140deg, #8ce8e6, #59b8cf); color: #07151b; cursor: pointer; box-shadow: 0 0 17px rgba(83,199,216,.16); transition: transform .15s, background .15s; }
+    .send:hover { transform: translateY(-1px); background: linear-gradient(140deg, #b0f5ec, #70cee1); }
+    .send:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid #f2d38f; outline-offset: 3px; }
+    .disclaimer { margin: 9px 0 0; color: #777f73; font-size: 10px; text-align: center; }
+    .side { display: flex; flex-direction: column; gap: 16px; }
+    .side-card { padding: 19px; border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(145deg, rgba(19,30,39,.92), rgba(12,19,27,.92)); box-shadow: inset 0 1px rgba(255,255,255,.025), 0 16px 36px rgba(0,0,0,.16); }
+    .side-card h2 { margin: 0 0 14px; font-family: var(--serif); font-size: 18px; font-weight: 500; }
+    .game-list { display: flex; flex-direction: column; gap: 5px; }
+    .game { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: #bbbdb2; cursor: pointer; font-size: 12px; text-align: left; transition: .18s ease; }
+    .game:hover { background: rgba(112,217,229,.055); color: var(--text); }
+    .game.active { border-color: rgba(112,217,229,.31); background: linear-gradient(100deg, rgba(112,217,229,.12), rgba(214,181,121,.055)); color: #dcf8f3; box-shadow: inset 2px 0 var(--cyan); }
+    .game-icon { display: grid; flex: 0 0 27px; place-items: center; width: 27px; height: 27px; border-radius: 8px; background: rgba(112,217,229,.07); color: #b5d8da; font-size: 13px; }
+    .game.active .game-icon { background: rgba(112,217,229,.15); color: var(--cyan); }
+    .divider { height: 1px; margin: 14px 0; background: var(--line); }
+    .detail { color: var(--muted); font-size: 11px; line-height: 1.65; }
+    .detail strong { display: block; margin-bottom: 5px; color: #aee9e6; font-size: 12px; font-weight: 600; }
+    .scope-card { position: relative; overflow: hidden; }
+    .scope-card::after { position: absolute; right: -22px; bottom: -46px; color: rgba(112,217,229,.07); content: "⌬"; font-family: var(--serif); font-size: 142px; pointer-events: none; }
+    .scope-card p { position: relative; z-index: 1; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+    .scope-card strong { color: #c9b27d; font-weight: 600; }
+    .typing { color: var(--muted); font-size: 12px; font-style: italic; }
+    @media (max-width: 800px) {
+      .app { padding: 14px 15px 20px; }
+      .layout { grid-template-columns: 1fr; gap: 13px; margin-top: 13px; }
+      .main-panel { min-height: min(720px, calc(100dvh - 93px)); }
+      .hero { padding: 20px; }
+      .avatar-container { flex-basis: 150px; width: 150px; }
+      .portrait { height: 195px; }
+      .chat { padding: 19px 19px 12px; }
+      .message { max-width: 94%; }
+      .suggestions { margin: 0 19px 14px 58px; }
+      .composer-wrap { padding: 0 17px 17px; }
+      .side { display: grid; grid-template-columns: 1fr; }
+      .games-card { padding: 14px; }
+      .game-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .game { font-size: 11px; }
+      .scope-card { display: none; }
+    }
+    @media (max-width: 440px) {
+      .top-note { font-size: 10px; }
+      .hero { gap: 14px; }
+      .avatar-container { flex-basis: 104px; width: 104px; }
+      .portrait { height: 150px; border-radius: 12px; }
+      h1 { font-size: 27px; }
+      .hero-copy { font-size: 11px; }
+      .hero { align-items: flex-start; gap: 12px; }
+      .model-credit { font-size: 8px; }
+    }
+    .speaking-scene { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; overflow: hidden; background: radial-gradient(ellipse at center, rgba(12,25,32,.68), rgba(4,8,13,.95) 74%); backdrop-filter: blur(8px); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .35s ease, visibility .35s ease; }
+    .speaking-scene.active { opacity: 1; visibility: visible; }
+    .speaking-scene::before, .speaking-scene::after { position: absolute; width: min(74vw, 580px); aspect-ratio: 1; border: 1px solid rgba(112,217,229,.14); border-radius: 50%; content: ""; pointer-events: none; }
+    .speaking-scene::after { width: min(88vw, 690px); border-style: dashed; border-color: rgba(214,181,121,.12); animation: scan-orbit 36s linear infinite; }
+    .speaking-card { position: relative; display: flex; width: min(590px, 86vw); flex-direction: column; align-items: center; gap: 18px; }
+    .closeup-frame { position: relative; width: min(520px, 78vw); height: min(580px, 70vh); min-height: 360px; overflow: hidden; border: 1px solid rgba(112,217,229,.53); border-radius: 48% 48% 19px 19px / 33% 33% 19px 19px; background: radial-gradient(ellipse at 50% 34%, #3a5355, #121c26 72%); box-shadow: 0 0 0 5px rgba(112,217,229,.035), 0 0 70px rgba(49,178,196,.24), inset 0 0 50px rgba(112,217,229,.17); }
+    .closeup-frame::before { position: absolute; z-index: 1; inset: 0; background: linear-gradient(180deg, rgba(7,12,19,.04) 44%, rgba(7,12,19,.15) 67%, rgba(7,12,19,.8)), repeating-linear-gradient(0deg, transparent 0 5px, rgba(112,217,229,.025) 6px); content: ""; pointer-events: none; }
+    .closeup-frame img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; mix-blend-mode: multiply; filter: saturate(.82) contrast(1.04) brightness(1.7); transform: translateY(8%) scale(3.4); transform-origin: 50% 8%; }
+    .talking-mouth { position: absolute; z-index: 2; top: 48.5%; left: 50%; width: 26px; height: 7px; overflow: hidden; border: 1px solid rgba(30,14,13,.76); border-radius: 45% 45% 52% 52%; background: linear-gradient(180deg, #211012 0%, #10090b 56%, #321819 100%); box-shadow: 0 1px 3px rgba(8,7,10,.75); opacity: .84; transform: translateX(-50%) scaleY(.18); transform-origin: center 35%; }
+    .talking-mouth::before, .talking-mouth::after { position: absolute; right: 2px; left: 2px; height: 1px; border-radius: 50%; background: rgba(127,68,61,.52); content: ""; }
+    .talking-mouth::before { top: 1px; }
+    .talking-mouth::after { bottom: 1px; background: rgba(179,103,89,.42); }
+    .speaking-scene.active .talking-mouth { animation: speak-mouth .38s ease-in-out infinite; }
+    @keyframes speak-mouth {
+      0%, 100% { transform: translateX(-50%) scaleY(.16) scaleX(.92); }
+      24% { transform: translateX(-50%) scaleY(.38) scaleX(1); }
+      43% { transform: translateX(-50%) scaleY(.68) scaleX(.9); }
+      61% { transform: translateX(-50%) scaleY(.24) scaleX(1.08); }
+      78% { transform: translateX(-50%) scaleY(.5) scaleX(.96); }
+    }
+    @keyframes scan-orbit { to { transform: rotate(360deg); } }
+    .speaking-label { display: flex; align-items: center; gap: 11px; color: #b5e9e6; font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; text-shadow: 0 0 16px rgba(112,217,229,.42); }
+    .speaking-label::before, .speaking-label::after { width: 28px; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan)); content: ""; }
+    .speaking-label::after { transform: rotate(180deg); }
+    .speaking-wave { display: flex; height: 19px; align-items: center; gap: 4px; }
+    .speaking-wave span { width: 2px; height: 5px; border-radius: 2px; background: var(--cyan); box-shadow: 0 0 8px rgba(112,217,229,.7); animation: voice-wave .5s ease-in-out infinite alternate; }
+    .speaking-wave span:nth-child(3n) { animation-delay: -.32s; }
+    .speaking-wave span:nth-child(3n + 1) { animation-delay: -.14s; }
+    @keyframes voice-wave { to { height: 17px; opacity: .56; } }
+    .scene-close { position: absolute; top: 18px; right: 18px; z-index: 3; display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid rgba(112,217,229,.36); border-radius: 50%; background: rgba(8,14,20,.76); color: #cff8f4; cursor: pointer; font-size: 22px; }
+    .scene-close:hover { background: rgba(112,217,229,.14); }
+    .scene-close:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+    @media (max-width: 440px) { .speaking-scene { padding: 16px; } .speaking-card { gap: 14px; } .closeup-frame { width: min(440px, 88vw); height: min(540px, 66vh); min-height: 310px; } .scene-close { top: 12px; right: 12px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    .app-footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(131,173,185,.14); text-align: center; color: #858b80; font-size: 12px; letter-spacing: .06em; }
+    .app-footer p { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 18 22"><path d="M9 20V3M9 8 3 2M9 11 16 4"/></svg></span><span>HELMAR</span></div>
+      <div class="top-note"><span class="status-dot" aria-hidden="true"></span>Redo att hjälpa Izabelle</div>
+    </header>
+    <main class="layout">
+      <section class="main-panel" aria-label="Chatt med Helmar">
+        <div class="hero">
+          <div class="avatar-container">
+            <div class="portrait" id="portrait">
+              <img src="assets/helmar-dark-hair.jpg" alt="Stilla illustration av en muskulös viking med mörkt hår, skägg och yxa">
+              <span class="avatar-status" id="avatarStatus">Helmar står stilla</span>
+            </div>
+            <p class="model-credit">Porträtt färgjusterat efter 3D-modell av <a href="https://sketchfab.com/illustros" target="_blank" rel="noopener noreferrer">illustros</a> · <a href="https://sketchfab.com/3d-models/viking-warrior-3f67e75069f14527bf354f2c5e79266a" target="_blank" rel="noopener noreferrer">Visa 3D-modellen</a></p>
+          </div>
+          <div>
+            <p class="eyebrow">Northern data link · Spelguide</p>
+            <h1>Helmar</h1>
+            <p class="hero-copy">Hälsningar, Izabelle. Jag står stadigt vid din sida — utan hjälm, med mörkt hår och skägg. Fråga mig om uppdrag, strider eller myter, så letar jag upp aktuell information och visar mina källor.</p>
+            <button class="voice-toggle" id="voiceToggle" type="button" aria-pressed="true">
+              <span aria-hidden="true">🔊</span><span id="voiceLabel">Röst på</span>
+            </button>
+          </div>
+        </div>
+        <div class="chat" id="chat" aria-live="polite" aria-relevant="additions text">
+          <div class="message">
+            <span class="mini-avatar" aria-hidden="true">H</span>
+            <div class="bubble">Välkommen till långhuset, Izabelle! Jag är Helmar. 🛡️<br>Fråga mig om ett spel eller ämne så söker jag efter information på nätet och visar mina källor.</div>
+          </div>
+        </div>
+        <div class="suggestions" id="suggestions" aria-label="Förslag på frågor">
+          <button class="suggestion" type="button">Hur blir jag starkare?</button>
+          <button class="suggestion" type="button">Ge mig ett stridstips</button>
+          <button class="suggestion" type="button">Berätta om nordisk mytologi</button>
+        </div>
+        <div class="composer-wrap">
+          <form class="composer" id="form">
+            <input id="question" type="text" placeholder="Fråga Helmar..." autocomplete="off" aria-label="Skriv din fråga">
+            <button class="mic-button" id="micButton" type="button" aria-label="Svara med rösten" aria-pressed="false" title="Tryck för att prata med Helmar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3m-4 0h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <button class="send" type="submit" aria-label="Skicka fråga">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12 20 4l-5 16-3-7-8-1Zm8 1 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </form>
+          <p class="disclaimer" id="voiceStatus">Helmar hämtar svar från spelwikier och Wikipedia. Källorna visas med länkar; många spelkällor är på engelska. Tryck på mikrofonen för att svara med rösten.</p>
+        </div>
+      </section>
+      <aside class="side">
+        <section class="side-card games-card">
+          <h2>Välj ditt äventyr</h2>
+          <div class="game-list" id="gameList" aria-label="Välj spel eller ämne"></div>
+          <div class="divider"></div>
+          <div class="detail"><strong id="gameTitle">Alla äventyr</strong><span id="gameDescription">Fråga om ett spel eller ämne så söker Helmar på nätet och visar sina källor.</span></div>
+        </section>
+        <section class="side-card scope-card">
+          <h2>En vis guide — inte allvetande</h2>
+          <p>Helmar söker live i spelwikier och Wikipedia när du ställer en fråga. Han visar korta utdrag ur artiklarna och länkar källorna i chatten. Många spelkällor är på engelska. Det här är en källbaserad sökning, inte ett genererat AI-svar. En internetanslutning krävs.</p>
+        </section>
+      </aside>
+    </main>
+    <footer class="app-footer">
+      <p>Skapad av Catherine Eskilsdotter 2026</p>
+    </footer>
+  </div>
+  <div class="speaking-scene" id="speakingScene" aria-hidden="true">
+    <button class="scene-close" id="closeSpeakingScene" type="button" aria-label="Stäng närbild och stoppa rösten">×</button>
+    <div class="speaking-card">
+      <div class="closeup-frame">
+        <img src="assets/helmar-dark-hair.jpg" alt="">
+        <span class="talking-mouth" aria-hidden="true"></span>
+      </div>
+      <div class="speaking-label">Helmar talar</div>
+      <div class="speaking-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <script>
+    const games = [
+      { id: "all", icon: "✦", name: "Alla äventyr", description: "Tips från alla spel och ämnen." },
+      { id: "skyrim", icon: "🐉", name: "Skyrim", description: "Drakbornas land, drakar och äventyr i Tamriel." },
+      { id: "toukiden", icon: "⚔", name: "Toukiden 2", description: "Jakt på oni, vapen och stridstaktik." },
+      { id: "where-winds-meet", icon: "☯", name: "Where Winds Meet", description: "Wuxia, martial arts och utforskning." },
+      { id: "fallout", icon: "☢", name: "Fallout", description: "Överlevnad, utforskning och val i ödemarken." },
+      { id: "cyberpunk", icon: "◈", name: "Cyberpunk 2077", description: "Night City, byggen och uppdrag." },
+      { id: "vikings", icon: "⚒", name: "Vikingahistoria", description: "Källnära fakta om livet under vikingatiden." },
+      { id: "mythology", icon: "✧", name: "Nordisk mytologi", description: "Gudar, jättar och berättelser från fornnordisk tradition." }
+    ];
+    const webSources = [
+      { id: "skyrim", name: "The Elder Scrolls Wiki", host: "elderscrolls.fandom.com" },
+      { id: "toukiden", name: "Toukiden Wiki", host: "toukiden.fandom.com" },
+      { id: "where-winds-meet", name: "Where Winds Meet Wiki", host: "where-winds-meet.fandom.com" },
+      { id: "fallout", name: "Fallout Wiki", host: "fallout.wiki" },
+      { id: "cyberpunk", name: "Cyberpunk Wiki", host: "cyberpunk.fandom.com" },
+      { id: "vikings", name: "Wikipedia · Vikingatiden", host: "sv.wikipedia.org" },
+      { id: "mythology", name: "Wikipedia · Nordisk mytologi", host: "sv.wikipedia.org" }
+    ].map(source => ({
+      ...source,
+      api: source.host === "sv.wikipedia.org"
+        ? `https://${source.host}/w/api.php`
+        : `https://${source.host}/api.php`,
+      baseUrl: `https://${source.host}`
+    }));
+    const sourceAliases = {
+      skyrim: ["skyrim", "tamriel"],
+      toukiden: ["toukiden", "oni"],
+      "where-winds-meet": ["where winds meet", "where wind meet", "wuxia"],
+      fallout: ["fallout", "ödemarken"],
+      cyberpunk: ["cyberpunk", "night city"],
+      vikings: ["vikingatid", "viking", "vikingar"],
+      mythology: ["nordisk mytologi", "mytologi", "odin", "tor", "thor", "loki", "loke", "yggdrasil", "ragnarök"]
+    };
+    const englishSearchTerms = new Map([
+      ["uppdrag", "quest"], ["uppdraget", "quest"], ["uppdragets", "quest"],
+      ["strid", "combat"], ["strider", "combat"], ["fiende", "enemy"], ["fiender", "enemies"],
+      ["vapen", "weapon"], ["vapnet", "weapon"], ["rustning", "armor"],
+      ["bygge", "build"], ["byggen", "builds"], ["hitta", "find"], ["var", "where"],
+      ["hur", "how"], ["bäst", "best"], ["bästa", "best"], ["döda", "kill"],
+      ["drake", "dragon"], ["drakar", "dragons"], ["färdighet", "skill"],
+      ["färdigheter", "skills"], ["uppgradera", "upgrade"], ["förbättra", "improve"],
+      ["magiker", "mage"], ["magi", "magic"], ["hemlighet", "secret"], ["hemligheter", "secrets"]
+    ]);
+    let selectedGame = "all";
+    const gameList = document.getElementById("gameList");
+    const chat = document.getElementById("chat");
+    const questionInput = document.getElementById("question");
+    const gameTitle = document.getElementById("gameTitle");
+    const gameDescription = document.getElementById("gameDescription");
+    const voiceToggle = document.getElementById("voiceToggle");
+    const voiceLabel = document.getElementById("voiceLabel");
+    const avatarStatus = document.getElementById("avatarStatus");
+    const voiceStatus = document.getElementById("voiceStatus");
+    const micButton = document.getElementById("micButton");
+    const speakingScene = document.getElementById("speakingScene");
+    const closeSpeakingScene = document.getElementById("closeSpeakingScene");
+    let voiceEnabled = true;
+    let currentUtterance = null;
+    let recognition = null;
+    let idleTimer = null;
+    let awaitingIdleReply = false;
+    let modelStatus = "Helmar står stilla";
+    const idleDelay = 10 * 60 * 1000;
+
+    function setSpeakingScene(active) {
+      speakingScene.classList.toggle("active", active);
+      speakingScene.setAttribute("aria-hidden", String(!active));
+      document.body.classList.toggle("helmar-speaking", active);
+    }
+
+    function resetIdleTimer() {
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        if (document.hidden || recognition) {
+          resetIdleTimer();
+          return;
+        }
+        if (awaitingIdleReply) return;
+        awaitingIdleReply = true;
+        const prompt = "Är du där Izabelle?";
+        addMessage(prompt, "assistant");
+        speakReply(prompt);
+        voiceStatus.textContent = "Helmar frågade om du är där. Tryck på mikrofonen och svara med rösten.";
+      }, idleDelay);
+    }
+
+    function stopSpeaking() {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      currentUtterance = null;
+      setSpeakingScene(false);
+      avatarStatus.textContent = modelStatus;
+    }
+
+    function speakReply(text) {
+      if (!voiceEnabled) return;
+      if (!("speechSynthesis" in window)) {
+        modelStatus = "Röst stöds inte i webbläsaren";
+        avatarStatus.textContent = modelStatus;
+        voiceStatus.textContent = "Svaret finns i chatten, men den här webbläsaren stöder inte taluppspelning.";
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "sv-SE";
+      utterance.rate = 0.82;
+      utterance.pitch = 0.46;
+      utterance.volume = 1;
+      const swedishVoices = window.speechSynthesis.getVoices()
+        .filter(voice => voice.lang.toLowerCase().startsWith("sv"));
+      const swedishVoice = swedishVoices.find(voice =>
+        /\b(male|man|oskar|mattias|erik|anders|fredrik|henrik|johan|lasse|rikard)\b/i.test(voice.name)
+      ) || swedishVoices[0];
+      if (swedishVoice) utterance.voice = swedishVoice;
+      currentUtterance = utterance;
+      utterance.onstart = () => {
+        if (currentUtterance !== utterance) return;
+        avatarStatus.textContent = "Helmar talar — närbild aktiv";
+        setSpeakingScene(true);
+      };
+      utterance.onend = () => {
+        if (currentUtterance !== utterance) return;
+        currentUtterance = null;
+        setSpeakingScene(false);
+        avatarStatus.textContent = modelStatus;
+      };
+      utterance.onerror = () => {
+        if (currentUtterance !== utterance) return;
+        currentUtterance = null;
+        setSpeakingScene(false);
+        modelStatus = "Kunde inte spela upp rösten";
+        avatarStatus.textContent = modelStatus;
+        voiceStatus.textContent = "Helmar har svarat i chatten, men rösten kunde inte spelas upp. Kontrollera ljudet eller prova en annan webbläsare.";
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    closeSpeakingScene.addEventListener("click", stopSpeaking);
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && speakingScene.classList.contains("active")) stopSpeaking();
+    });
+
+    voiceToggle.addEventListener("click", () => {
+      voiceEnabled = !voiceEnabled;
+      voiceToggle.setAttribute("aria-pressed", String(voiceEnabled));
+      voiceLabel.textContent = voiceEnabled ? "Röst på" : "Röst av";
+      if (!voiceEnabled) stopSpeaking();
+    });
+
+    function stopListening() {
+      if (recognition) recognition.stop();
+    }
+
+    function startListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        voiceStatus.textContent = "Röstinmatning stöds inte här. Prova Chrome eller Edge, eller skriv ditt svar.";
+        return;
+      }
+      if (recognition) {
+        stopListening();
+        return;
+      }
+      const listener = new SpeechRecognition();
+      listener.lang = "sv-SE";
+      listener.continuous = false;
+      listener.interimResults = false;
+      recognition = listener;
+      micButton.setAttribute("aria-pressed", "true");
+      micButton.setAttribute("aria-label", "Sluta lyssna");
+      voiceStatus.textContent = "Helmar lyssnar — säg något på svenska.";
+      listener.onresult = event => {
+        const transcript = event.results[0][0].transcript.trim();
+        if (transcript) sendQuestion(transcript);
+      };
+      listener.onerror = event => {
+        const messages = {
+          "not-allowed": "Mikrofonåtkomst nekades. Tillåt mikrofonen i webbläsarens inställningar.",
+          "service-not-allowed": "Webbläsaren tillåter inte röstigenkänning. Prova Chrome eller Edge, eller skriv din fråga.",
+          "audio-capture": "Ingen mikrofon hittades.",
+          "no-speech": "Jag hörde inget. Kontrollera mikrofonen och försök igen.",
+          "network": "Webbläsarens taligenkänning kunde inte nås (nätverksfel). Kontrollera internetanslutningen och prova igen, eller skriv din fråga.",
+          "language-not-supported": "Webbläsaren stöder inte svensk taligenkänning. Prova Chrome eller Edge, eller skriv din fråga.",
+          "aborted": "Röstinmatningen avbröts. Tryck på mikrofonen för att försöka igen."
+        };
+        voiceStatus.textContent = messages[event.error] || "Röstinmatningen misslyckades. Prova igen eller skriv ditt svar.";
+      };
+      listener.onend = () => {
+        if (recognition !== listener) return;
+        recognition = null;
+        micButton.setAttribute("aria-pressed", "false");
+        micButton.setAttribute("aria-label", "Svara med rösten");
+        if (voiceStatus.textContent === "Helmar lyssnar — säg något på svenska.") {
+          voiceStatus.textContent = "Tryck på mikrofonen för att svara med rösten.";
+        }
+        resetIdleTimer();
+      };
+      try {
+        listener.start();
+      } catch (error) {
+        recognition = null;
+        micButton.setAttribute("aria-pressed", "false");
+        micButton.setAttribute("aria-label", "Svara med rösten");
+        const startErrorMessages = {
+          NotAllowedError: "Mikrofonåtkomst nekades. Tillåt mikrofonen i webbläsarens inställningar.",
+          InvalidStateError: "Röstinmatningen körs redan. Vänta ett ögonblick och försök igen."
+        };
+        voiceStatus.textContent = startErrorMessages[error.name] || "Röstinmatningen kunde inte starta. Kontrollera mikrofonen och försök igen.";
+      }
+    }
+
+    micButton.addEventListener("click", startListening);
+    document.addEventListener("pointerdown", resetIdleTimer);
+    document.addEventListener("keydown", resetIdleTimer);
+    document.addEventListener("wheel", resetIdleTimer, { passive: true });
+    questionInput.addEventListener("input", resetIdleTimer);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) resetIdleTimer();
+    });
+
+    function renderGames() {
+      gameList.replaceChildren();
+      games.forEach(game => {
+        const button = document.createElement("button");
+        button.className = "game" + (game.id === selectedGame ? " active" : "");
+        button.type = "button";
+        button.setAttribute("aria-pressed", game.id === selectedGame ? "true" : "false");
+        button.innerHTML = `<span class="game-icon" aria-hidden="true">${game.icon}</span><span>${game.name}</span>`;
+        button.addEventListener("click", () => {
+          resetIdleTimer();
+          selectedGame = game.id;
+          gameTitle.textContent = game.name;
+          gameDescription.textContent = game.description;
+          renderGames();
+        });
+        gameList.appendChild(button);
+      });
+    }
+
+    function addMessage(text, who, source) {
+      const row = document.createElement("div");
+      row.className = `message ${who}`;
+      if (who === "assistant") {
+        const avatar = document.createElement("span");
+        avatar.className = "mini-avatar";
+        avatar.setAttribute("aria-hidden", "true");
+        avatar.textContent = "H";
+        row.appendChild(avatar);
+      }
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+      if (source) {
+        const note = document.createElement("span");
+        note.className = "source";
+        note.textContent = source;
+        bubble.appendChild(note);
+      }
+      row.appendChild(bubble);
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+      return bubble;
+    }
+
+    function addSourceLinks(bubble, citations) {
+      if (!citations.length) return;
+      const note = document.createElement("span");
+      note.className = "source";
+      note.append("Källor: ");
+      citations.forEach((citation, index) => {
+        if (index) note.append(" · ");
+        const link = document.createElement("a");
+        link.href = citation.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = citation.label;
+        note.appendChild(link);
+      });
+      bubble.appendChild(note);
+    }
+
+    async function fetchWikiJson(source, parameters) {
+      const url = new URL(source.api);
+      Object.entries({ ...parameters, format: "json", origin: "*" }).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error(`${source.name} svarade med HTTP ${response.status}.`);
+        const data = await response.json();
+        if (data.error) throw new Error(`${source.name}: ${data.error.info || data.error.code}.`);
+        return data;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error(`Sökningen hos ${source.name} tog för lång tid.`);
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    async function translateExcerptToSwedish(text) {
+      const url = new URL("https://translate.googleapis.com/translate_a/single");
+      url.searchParams.set("client", "gtx");
+      url.searchParams.set("sl", "auto");
+      url.searchParams.set("tl", "sv");
+      url.searchParams.set("dt", "t");
+      url.searchParams.set("q", text);
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error(`Översättningstjänsten svarade med HTTP ${response.status}.`);
+        const data = await response.json();
+        const translatedText = data[0]?.map(segment => segment[0]).join("");
+        if (!translatedText) throw new Error("Översättningstjänsten gav inget svar.");
+        return translatedText;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error("Översättningen tog för lång tid.");
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    function makeEnglishSearch(question) {
+      return question.replace(/[\p{L}\p{N}]+/gu, word =>
+        englishSearchTerms.get(word.toLocaleLowerCase("sv")) || word
+      );
+    }
+
+    function getArticleText(html) {
+      const documentFragment = new DOMParser().parseFromString(html, "text/html");
+      const content = documentFragment.querySelector(".mw-parser-output") || documentFragment.body;
+      content.querySelectorAll("script, style, nav, blockquote, .reference, .mw-editsection, .toc, .hatnote, .metadata, .navbox, .infobox").forEach(element => element.remove());
+      content.querySelectorAll("br").forEach(element => element.replaceWith(" "));
+      content.querySelectorAll("tr").forEach(element => element.insertAdjacentText("beforebegin", " "));
+      content.querySelectorAll("td, th").forEach(element => element.insertAdjacentText("beforeend", " · "));
+      const text = content.textContent
+        .replace(/This page currently has [\d,]+ bytes of data and may slow down your browser\. Please wait until it finishes loading\./g, "")
+        .replace(/(?:Wow, that's a big one\.|It's just a big lump\.) — [^.]+/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      return text.slice(0, 420).trimEnd() + (text.length > 420 ? "…" : "");
+    }
+
+    async function searchSource(source, question, resultLimit) {
+      const searchText = source.host.endsWith(".fandom.com") || source.host === "fallout.wiki"
+        ? makeEnglishSearch(question)
+        : question;
+      const search = await fetchWikiJson(source, {
+        action: "query",
+        list: "search",
+        srsearch: searchText,
+        srlimit: String(resultLimit)
+      });
+      const pages = search.query?.search || [];
+      const articles = await Promise.all(pages.map(async page => {
+        const parsed = await fetchWikiJson(source, {
+          action: "parse",
+          pageid: String(page.pageid),
+          prop: "text",
+          section: "0"
+        });
+        const html = parsed.parse?.text?.["*"];
+        if (!html) return null;
+        const title = parsed.parse.title || page.title;
+        return {
+          title,
+          text: getArticleText(html),
+          source: source.name,
+          url: `${source.baseUrl}/wiki/${title.split("/").map(part => encodeURIComponent(part.replace(/ /g, "_"))).join("/")}`
+        };
+      }));
+      return articles.filter(article => article && article.text);
+    }
+
+    function sourceForQuestion(question) {
+      const normalizedQuestion = question.toLocaleLowerCase("sv");
+      if (selectedGame !== "all") {
+        return webSources.find(source => source.id === selectedGame);
+      }
+      let matchingSource = null;
+      let firstMatch = normalizedQuestion.length;
+      webSources.forEach(source => {
+        sourceAliases[source.id].forEach(alias => {
+          const index = normalizedQuestion.indexOf(alias);
+          if (index !== -1 && index < firstMatch) {
+            firstMatch = index;
+            matchingSource = source;
+          }
+        });
+      });
+      return matchingSource;
+    }
+
+    async function searchOnline(question) {
+      const focusedSource = sourceForQuestion(question);
+      const sources = focusedSource ? [focusedSource] : webSources;
+      const searches = await Promise.allSettled(sources.map(source =>
+        searchSource(source, question, 1)
+      ));
+      const articles = searches.flatMap(result => result.status === "fulfilled" ? result.value : []);
+      const failures = searches.filter(result => result.status === "rejected");
+      if (!articles.length && failures.length) {
+        throw new Error(failures.map(result => result.reason.message).join(" "));
+      }
+      return {
+        articles: articles.slice(0, focusedSource ? 3 : 5),
+        hadSourceErrors: failures.length > 0,
+        focusedSource
+      };
+    }
+
+    async function replyTo(question) {
+      const q = question.toLocaleLowerCase("sv");
+      if (awaitingIdleReply) {
+        awaitingIdleReply = false;
+        if (/\b(ja|japp|jo|här|hallo|hej|nej|nä)\b/.test(q)) {
+          voiceStatus.textContent = "Tack för svaret, Izabelle. Fråga Helmar igen när du vill.";
+          return {
+            text: /\b(nej|nä)\b/.test(q)
+              ? "Okej, Izabelle. Jag finns här när du vill ha hjälp. Vi hörs senare!"
+              : "Vad bra att du är här, Izabelle! Vad vill du att vi ska göra nu?",
+            source: "Helmar"
+          };
+        }
+      }
+      const result = await searchOnline(question);
+      if (!result.articles.length) {
+        const game = games.find(item => item.id === (result.focusedSource || { id: selectedGame }).id);
+        return {
+          text: `Jag hittade inga artiklar om den frågan${game && game.id !== "all" ? ` i ${game.name}` : ""}. Prova att lägga till namnet på uppdraget, föremålet eller karaktären.`,
+          source: "Webbsökning · inga träffar"
+        };
+      }
+      const translations = await Promise.allSettled(result.articles.map(article =>
+        translateExcerptToSwedish(article.text)
+      ));
+      const articles = result.articles.map((article, index) => ({
+        ...article,
+        translatedText: translations[index].status === "fulfilled" ? translations[index].value : article.text,
+        translationSucceeded: translations[index].status === "fulfilled"
+      }));
+      const translationFailed = translations.some(translation => translation.status === "rejected");
+      return {
+        text: `${result.focusedSource ? `Här är vad jag hittade om ${games.find(game => game.id === result.focusedSource.id).name}:` : "Jag hittade de här träffarna på nätet:"}\n\n${articles.map(article => `${article.title}\n${article.translatedText}`).join("\n\n")}${translationFailed ? "\n\nEn del text kunde inte översättas och visas därför på originalspråket." : ""}${result.hadSourceErrors ? "\n\nAlla källor gick inte att nå, så detta är bara de svar som kom fram." : ""}`,
+        speechText: articles.filter(article => article.translationSucceeded).slice(0, 2).map(article => article.translatedText).join(" ").slice(0, 450),
+        citations: articles.map(article => ({ label: article.title, url: article.url })),
+        source: translationFailed ? "Hämtat live från nätet · någon text visas på originalspråk" : "Hämtat och översatt från nätet"
+      };
+    }
+
+    async function sendQuestion(text) {
+      const question = text.trim();
+      if (!question) return;
+      resetIdleTimer();
+      addMessage(question, "user");
+      questionInput.value = "";
+      const answerBubble = addMessage("Helmar söker på nätet…", "assistant");
+      voiceStatus.textContent = "Helmar söker i spelwikier och Wikipedia…";
+      try {
+        const answer = await replyTo(question);
+        answerBubble.textContent = answer.text;
+        if (answer.source) {
+          const note = document.createElement("span");
+          note.className = "source";
+          note.textContent = answer.source;
+          answerBubble.appendChild(note);
+        }
+        addSourceLinks(answerBubble, answer.citations || []);
+        voiceStatus.textContent = answer.citations?.length
+          ? answer.speechText
+            ? "Helmar hittade svaret på nätet och visar det på svenska. Källänkarna finns i chatten."
+            : "Svaret finns i chatten, men kunde inte översättas till svenska för uppläsning."
+          : "Helmar är redo att söka igen. Du kan också välja ett särskilt spel eller ämne.";
+        if (answer.speechText) speakReply(answer.speechText);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Ett okänt fel inträffade.";
+        answerBubble.textContent = `Jag kunde inte hämta information från nätet. ${message} Kontrollera anslutningen och försök igen.`;
+        voiceStatus.textContent = "Webbsökningen misslyckades. Kontrollera internetanslutningen och försök igen.";
+      }
+    }
+
+    document.getElementById("form").addEventListener("submit", event => {
+      event.preventDefault();
+      sendQuestion(questionInput.value);
+    });
+    document.getElementById("suggestions").addEventListener("click", event => {
+      const button = event.target.closest("button");
+      if (button) sendQuestion(button.textContent);
+    });
+    resetIdleTimer();
+    renderGames();
+  </script>
+</body>
+</html>

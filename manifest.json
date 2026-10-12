@@ -1,0 +1,18 @@
+{
+  "name": "Helmar — Din Spelguide",
+  "short_name": "Helmar",
+  "description": "Helmar, din personliga vikingaguide för spel, äventyr och fornnordiska myter.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080c12",
+  "theme_color": "#080c12",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
