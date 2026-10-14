@@ -19,7 +19,7 @@ Lokal utveckling av funktionen kräver Netlify CLI och ett tidigare production d
 
 Helmar behåller de senaste chattmeddelandena i sidans minne så att följdfrågor kan använda tidigare spel- och uppdragskontext. Den befintliga 3D-modellen visas permanent i närbild från bröstet och upp; hälsningstexten är "Jag är redo att svara på dina frågor, Izabelle." Modellen saknar ansiktsrigg och mun-morfmål; munöppningen under tal är därför approximativ, inte fullständig ansikts- eller fonemsynk.
 
-Tal använder en svensk mansröst från webbläsarens installerade röster (till exempel "Microsoft Bengt - Swedish" i Chrome på Windows). Om ingen igenkänd svensk mansröst finns tillgänglig visas ett meddelande i chatten i stället för att byta till en ospecificerad röst. När Izabelle startar mikrofonen avbryts Helmars uppläsning direkt så att han kan lyssna.
+Tal föredrar en svensk mansröst från webbläsarens installerade röster (till exempel "Microsoft Bengt - Swedish" i Chrome på Windows). Om rösterna laddas sent väntar Helmar kort på dem; annars används en tillgänglig svensk röst eller webbläsarens standardröst i stället för att tystna. När Izabelle startar mikrofonen avbryts Helmars uppläsning direkt så att han kan lyssna.
 
 ---
 Skapad av Catherine Eskilsdotter 2026.

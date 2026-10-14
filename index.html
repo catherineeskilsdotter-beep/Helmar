@@ -288,6 +288,7 @@
     const micButton = document.getElementById("micButton");
     let voiceEnabled = true;
     let currentUtterance = null;
+    let speechRequestId = 0;
     let mouthTimer = null;
     let recognition = null;
     let idleTimer = null;
@@ -320,6 +321,7 @@
     }
 
     function stopSpeaking() {
+      speechRequestId += 1;
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       window.clearTimeout(mouthTimer);
       currentUtterance = null;
@@ -327,14 +329,36 @@
       avatarStatus.textContent = modelStatus;
     }
 
-    function findSwedishMaleVoice() {
+    function findSwedishMaleVoice(voices = window.speechSynthesis.getVoices()) {
       const maleVoiceName = /\b(bengt|oskar|mattias|erik|anders|fredrik|henrik|johan|lasse|rikard|gustav|nils|stig|per|arne|urban|håkan|lars|stefan)\b/i;
-      return window.speechSynthesis.getVoices().find(voice =>
+      return voices.find(voice =>
         voice.lang.toLowerCase().startsWith("sv") && maleVoiceName.test(voice.name)
       );
     }
 
-    function speakReply(text, laughAfter = false) {
+    function waitForSwedishVoice() {
+      const currentVoice = findSwedishMaleVoice();
+      if (currentVoice) return Promise.resolve(currentVoice);
+
+      return new Promise(resolve => {
+        let timeout;
+        const finish = voice => {
+          window.clearTimeout(timeout);
+          window.speechSynthesis.removeEventListener("voiceschanged", checkVoices);
+          resolve(voice || findSwedishMaleVoice() || window.speechSynthesis.getVoices().find(
+            voice => voice.lang.toLowerCase().startsWith("sv")
+          ) || null);
+        };
+        const checkVoices = () => {
+          const maleVoice = findSwedishMaleVoice();
+          if (maleVoice) finish(maleVoice);
+        };
+        window.speechSynthesis.addEventListener("voiceschanged", checkVoices);
+        timeout = window.setTimeout(() => finish(null), 1000);
+      });
+    }
+
+    async function speakReply(text, laughAfter = false) {
       if (!voiceEnabled) return;
       if (!("speechSynthesis" in window)) {
         modelStatus = "Röst stöds inte i webbläsaren";
@@ -343,13 +367,9 @@
         return;
       }
       window.speechSynthesis.cancel();
-      const swedishVoice = findSwedishMaleVoice();
-      if (!swedishVoice) {
-        modelStatus = "Ingen svensk mansröst hittades";
-        avatarStatus.textContent = modelStatus;
-        voiceStatus.textContent = "Svaret finns i chatten, men ingen svensk mansröst hittades i webbläsaren. Installera eller aktivera en svensk mansröst och försök igen.";
-        return;
-      }
+      const requestId = ++speechRequestId;
+      const swedishVoice = await waitForSwedishVoice();
+      if (!voiceEnabled || requestId !== speechRequestId) return;
       const play = (spokenText, isLaugh = false) => {
         const utterance = new SpeechSynthesisUtterance(spokenText);
         utterance.lang = "sv-SE";

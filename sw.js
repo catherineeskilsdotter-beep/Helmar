@@ -1,4 +1,4 @@
-const CACHE_NAME = 'helmar-v11';
+const CACHE_NAME = 'helmar-v12';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
